@@ -1,0 +1,40 @@
+<!DOCTYPE>
+<html>
+     <head>
+
+    <style>
+    .button.built {
+        position: absolute;
+        position: fixed;
+        border-radius: 10px;
+        width: 100px;
+        height: 100px;
+    }
+    </style>
+
+           <script>
+                
+                //the array
+                function printBtn() {
+                    for (var i = 0; i < 5; i++) {
+                        for (var j = 0; j < 5; j++) {
+                           var btn = document.createElement("button");
+                           btn.setAttribute("value",i+'_'+j);
+                           btn.className = btn.className + "button built";
+                           btn.id='field'+i+'_'+'j';
+                           
+                           
+                           btn.style.left=100+j*100;
+                           btn.style.top=i*100;
+                           btn.textContent=i+'_'+j;
+                           
+                           document.body.appendChild(btn);
+                        }
+                    }
+                }
+           </script>  
+     </head>
+     <body onload="printBtn();">
+  
+     </body>
+</html>

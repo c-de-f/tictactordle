@@ -1,8 +1,7 @@
 <!DOCTYPE>
 <html>
-     <head>
-
-    <style>
+    <head>
+        <style>
     .button.built {
         position: absolute;
         position: fixed;
@@ -11,9 +10,13 @@
         height: 100px;
     }
     </style>
+    </head>
+    <body onload="printBtn();"></body>
+    <script>
 
-           <script>
-                
+            let field = Array(5).fill().map(() => Array(5).fill(0));
+
+              
                 //the array
                 function printBtn() {
                     for (var i = 0; i < 5; i++) {
@@ -21,20 +24,30 @@
                            var btn = document.createElement("button");
                            btn.setAttribute("value",i+'_'+j);
                            btn.className = btn.className + "button built";
-                           btn.id='field'+i+'_'+'j';
+                           btn.id=i+'_'+j;
                            
                            
                            btn.style.left=100+j*100;
                            btn.style.top=i*100;
-                           btn.textContent=i+'_'+j;
+                           btn.textContent=btn.id;
+                           btn.onclick = function() {setState(this.id);};
                            
                            document.body.appendChild(btn);
                         }
                     }
                 }
-           </script>  
-     </head>
-     <body onload="printBtn();">
-  
-     </body>
+
+                function setState(_id)
+            {
+              [i,j]= _id.split('_');
+              
+              field[i][j]=1;
+              document.getElementById(i+'_'+j).textContent='x';
+              console.log(field);
+            }
+
+
+              
+           
+    </script>
 </html>

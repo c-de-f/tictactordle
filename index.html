@@ -29,12 +29,42 @@
     </head>
     <body onload="printBtn();"></body>
     <script>
-
+            let letters_alphabet='abcdefghijklmnopqrstuvwxyz';
+            let init_wordlist=['abash','tithe','epoxy','ounce','vegan','budge','lanky','peril','swift','block'];
             let field = Array(5).fill().map(() => Array(5).fill(0));
+            let word='';
+            let letters_tried = [];
+            let letters_fleld = Array(5).fill().map(() => Array(5).fill(null));
+
+                function isWin()
+                {
+                    lines=Array(5).fill(null);
+                    for (var i = 0; i < 5; i++) {
+                        for (var j = 0; j < 5; j++) {
+                            lines[j]+=''+field[i][j]; //rows
+                            lines[5+i]+=''+field[i][j]; //cols
+                        }
+                        lines[10]+=''+field[i][i];
+                        lines[11]+=''+field[i][5-i];
+                    }
+                    if lines.includes('11111') return 'x';
+                    if lines.includes('-1-1-1-1-1') return 'o';
+                    return null;
+                }
+
+                function setWord()
+                {
+                    var curdate = new Date();
+                    var refdate = new Date(2022, 5, 7);
+                    diff = (new Date(curdate.getTime() - refdate.getTime())).getUTCDate() - 1;
+                    console.log ('Word number is: '+diff);
+                    word=init_wordlist[diff];
+                }
 
               
                 //the array
                 function printBtn() {
+                    setWord();
                     for (var i = 0; i < 5; i++) {
                         for (var j = 0; j < 5; j++) {
                            var d= document.createElement("div");
@@ -55,29 +85,113 @@
                     }
                 }
 
-                function validate(input){
+                function validate(input, _id){
                     
        // alert(input.value);
-    letter = input.value[0];
-    console.log(letter);
+    letters_tried.append(input.value[0]);
+    [i,j]= _id.split('_');
+    letters_field[i,j]=input.value[0];
+    console.log(letters);
 }
 
+function getLetter(not_in_word)
+{
+    untried = letters_alphabet.filter(x => !letters_tried.includes(x) );
+    if (not_in_word)
+    {
+        untried = untried.filter(x => !word.includes(x) );
+    }
+    return untried[Math.random()*untried.length];
+}
+
+
+function cpuStep(_id){
+[i,j]= _id.split('_');
+l=letters_field[i,j];
+ind=word.indexOf(l);
+if (ind == j)
+{
+    document.getElementById(i+'_'+j).style.background-color = "#6aaa64";
+    put_l=getLetter(1);
+    x_ind=(i+1)%5;
+    y_ind=j;
+    while (field[x_ind][y_ind] !=0)
+    {
+        x_ind=Math.random()*5;
+        y_ind=Math.random()*5;
+    }
+    field[x_ind][y_ind]=-1;
+    letters_field[x_ind][y_ind]=put_l;
+    letters_tried.append(put_l);
+    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.background-color = "#787c7e";
+    //set lower letter to gray
+}
+else if (int != -1)
+{
+    document.getElementById(i+'_'+j).style.background-color = "#c9b458";
+    //set lower letter to whatever
+    put_l=getLetter(0);
+    x_ind=(i+1)%5;
+    y_ind=j;
+    while (field[x_ind][y_ind] !=0)
+    {
+        x_ind=Math.random()*5;
+        y_ind=Math.random()*5;
+    }
+    field[x_ind][y_ind]=-1;
+    letters_field[x_ind][y_ind]=put_l;
+    letters_tried.append(put_l);
+    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.background="repeating-linear-gradient(45deg,#c9b458,#c9b458 10px, #787c7e 10px);";
+}
+else
+{
+    document.getElementById(i+'_'+j).style.background-color = "#787c7e";
+    put_l=getLetter(0);
+    x_ind=Math.random()*5;
+    y_ind=Math.random()*5;
+    while (field[x_ind][y_ind] !=0)
+    {
+        x_ind=Math.random()*5;
+        y_ind=Math.random()*5;
+    }
+    field[x_ind][y_ind]=-1;
+    letters_field[x_ind][y_ind]=put_l;
+    letters_tried.append(put_l);
+    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.background="repeating-linear-gradient(45deg,#c9b458,#c9b458 10px, #787c7e 10px);";
+    //set whatever letter to whatever
+}
+x=isWin();
+if (x)
+{
+    console.log('You lost, try again');
+    //you lost, try again
+}
+}
                 function setState(_id)
             {
                 var _in = document.createElement('input');
                 _in.id='inp'+_id;
                 _in.type="text";
                 _in.maxLength="1";
-                _in.onkeyup = function() {validate(this);};
+                _in.onkeyup = function() {validate(this, _id);};
                 _in.size="1";
 
-  
                 document.getElementById('cnt'+_id).appendChild(_in);
               [i,j]= _id.split('_');
               
               field[i][j]=1;
-              document.getElementById(i+'_'+j).textContent='x';
+              document.getElementById(i+'_'+j).textContent=letters_field[i][j]+'/x';
               console.log(field);
+              x=isWin();
+              if (x === null) {cpuStep(_id);}
+              else
+              {
+                console.log('you won, now guess a wordle');
+                //you won now guess
+              }
             }
 
 

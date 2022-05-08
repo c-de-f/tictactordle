@@ -3,11 +3,27 @@
     <head>
         <style>
     .button.built {
-        position: absolute;
+        top: 0%; 
         position: fixed;
         border-radius: 10px;
         width: 100px;
         height: 100px;
+        z-index: 2;
+    }
+    .cellcnt
+    {
+     position: fixed;
+        width: 100px;
+        height: 100px;   
+        
+    }
+    input[type="text"]
+    {
+        top: 40px; 
+        left:40px;
+        position: relative;
+        width: 20px;
+        z-index: 20;
     }
     </style>
     </head>
@@ -21,24 +37,42 @@
                 function printBtn() {
                     for (var i = 0; i < 5; i++) {
                         for (var j = 0; j < 5; j++) {
+                           var d= document.createElement("div");
+                           d.id='cnt'+i+'_'+j;
                            var btn = document.createElement("button");
                            btn.setAttribute("value",i+'_'+j);
                            btn.className = btn.className + "button built";
                            btn.id=i+'_'+j;
                            
-                           
-                           btn.style.left=100+j*100;
-                           btn.style.top=i*100;
+                           d.className = d.className + "cellcnt";
+                           d.style.left=btn.style.left=100+j*100;
+                           d.style.top=btn.style.top=i*100;
                            btn.textContent=btn.id;
                            btn.onclick = function() {setState(this.id);};
-                           
-                           document.body.appendChild(btn);
+                           d.appendChild(btn);
+                           document.body.appendChild(d);
                         }
                     }
                 }
 
+                function validate(input){
+                    
+       // alert(input.value);
+    letter = input.value[0];
+    console.log(letter);
+}
+
                 function setState(_id)
             {
+                var _in = document.createElement('input');
+                _in.id='inp'+_id;
+                _in.type="text";
+                _in.maxLength="1";
+                _in.onkeyup = function() {validate(this);};
+                _in.size="1";
+
+  
+                document.getElementById('cnt'+_id).appendChild(_in);
               [i,j]= _id.split('_');
               
               field[i][j]=1;

@@ -10,6 +10,10 @@
         height: 100px;
         z-index: 2;
     }
+    .button.built:disabled,button:disabled,
+button[disabled] {
+        color: #000000;
+    }
     .cellcnt
     {
      position: fixed;
@@ -29,16 +33,16 @@
     </head>
     <body onload="printBtn();"></body>
     <script>
-            let letters_alphabet='abcdefghijklmnopqrstuvwxyz';
+            let letters_alphabet='abcdefghijklmnopqrstuvwxyz'.split('');
             let init_wordlist=['abash','tithe','epoxy','ounce','vegan','budge','lanky','peril','swift','block'];
             let field = Array(5).fill().map(() => Array(5).fill(0));
             let word='';
             let letters_tried = [];
-            let letters_fleld = Array(5).fill().map(() => Array(5).fill(null));
+            let letters_field = Array(5).fill().map(() => Array(5).fill(null));
 
                 function isWin()
                 {
-                    lines=Array(5).fill(null);
+                    let lines=Array(12).fill('');
                     for (var i = 0; i < 5; i++) {
                         for (var j = 0; j < 5; j++) {
                             lines[j]+=''+field[i][j]; //rows
@@ -47,8 +51,9 @@
                         lines[10]+=''+field[i][i];
                         lines[11]+=''+field[i][5-i];
                     }
-                    if lines.includes('11111') return 'x';
-                    if lines.includes('-1-1-1-1-1') return 'o';
+                    for (var i = 0; i < lines.length; i++) {console.log(lines[i])}
+                    if (lines.indexOf('11111') != -1) {return 'x'};
+                    if (lines.indexOf('-1-1-1-1-1') != -1) {return 'o'};
                     return null;
                 }
 
@@ -59,6 +64,7 @@
                     diff = (new Date(curdate.getTime() - refdate.getTime())).getUTCDate() - 1;
                     console.log ('Word number is: '+diff);
                     word=init_wordlist[diff];
+                    console.log ('Word is: '+word);
                 }
 
               
@@ -88,10 +94,16 @@
                 function validate(input, _id){
                     
        // alert(input.value);
-    letters_tried.append(input.value[0]);
+       let l=input.value[0];
+    letters_tried.push(l);
     [i,j]= _id.split('_');
-    letters_field[i,j]=input.value[0];
-    console.log(letters);
+    letters_field[i,j]=l;
+    document.getElementById('inp'+i+'_'+j).type="hidden";
+    document.getElementById(i+'_'+j).textContent=l.toUpperCase()+'/x';
+              console.log("field is:"+field);
+             cpuStep(_id);
+    console.log("letters are:"+letters_field);
+    document.getElementById(_id).disabled = true;
 }
 
 function getLetter(not_in_word)
@@ -101,7 +113,7 @@ function getLetter(not_in_word)
     {
         untried = untried.filter(x => !word.includes(x) );
     }
-    return untried[Math.random()*untried.length];
+    return untried[Math.floor(Math.random()*untried.length)];
 }
 
 
@@ -109,64 +121,89 @@ function cpuStep(_id){
 [i,j]= _id.split('_');
 l=letters_field[i,j];
 ind=word.indexOf(l);
-if (ind == j)
+let x_ind=-1;
+let y_ind=-1;
+
+
+if ((ind == j) || (word[j] == l))
 {
-    document.getElementById(i+'_'+j).style.background-color = "#6aaa64";
+    document.getElementById(i+'_'+j).style.backgroundColor = "#6aaa64";
     put_l=getLetter(1);
     x_ind=(i+1)%5;
     y_ind=j;
     while (field[x_ind][y_ind] !=0)
     {
-        x_ind=Math.random()*5;
-        y_ind=Math.random()*5;
+        x_ind=Math.floor(Math.random()*5);
+        y_ind=Math.floor(Math.random()*5);
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
-    letters_tried.append(put_l);
-    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
-    document.getElementById(x_ind+'_'+y_ind).style.background-color = "#787c7e";
-    //set lower letter to gray
+    letters_tried.push(put_l);
+    setTimeout(function(){ 
+
+       
+document.getElementById(x_ind+'_'+y_ind).textContent=put_l.toUpperCase()+'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.backgroundColor = "#787c7e"; 
+    }, 500);  
+    console.log("set lower letter to gray");
 }
-else if (int != -1)
+else if (ind != -1)
 {
-    document.getElementById(i+'_'+j).style.background-color = "#c9b458";
-    //set lower letter to whatever
+    document.getElementById(i+'_'+j).style.backgroundColor = "#c9b458";
+    console.log("set lower letter to whatever");
     put_l=getLetter(0);
     x_ind=(i+1)%5;
     y_ind=j;
     while (field[x_ind][y_ind] !=0)
     {
-        x_ind=Math.random()*5;
-        y_ind=Math.random()*5;
+        x_ind=Math.floor(Math.random()*5);
+        y_ind=Math.floor(Math.random()*5);
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
-    letters_tried.append(put_l);
-    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
-    document.getElementById(x_ind+'_'+y_ind).style.background="repeating-linear-gradient(45deg,#c9b458,#c9b458 10px, #787c7e 10px);";
+    letters_tried.push(put_l);
+    setTimeout(function(){ 
+
+       
+
+    document.getElementById(x_ind+'_'+y_ind).textContent=put_l.toUpperCase()+'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.backgroundImage="linear-gradient(45deg, #c9b458 25%, #787c7e 25%, #787c7e 50%, #c9b458 50%, #c9b458 75%, #787c7e 75%, #787c7e 100%)";
+
+    }, 500);  
 }
 else
 {
-    document.getElementById(i+'_'+j).style.background-color = "#787c7e";
-    put_l=getLetter(0);
-    x_ind=Math.random()*5;
-    y_ind=Math.random()*5;
+    document.getElementById(i+'_'+j).style.backgroundColor = "#787c7e";
+    let put_l=getLetter(0);
+    x_ind=Math.floor(Math.random()*5);
+    y_ind=Math.floor(Math.random()*5);
     while (field[x_ind][y_ind] !=0)
     {
-        x_ind=Math.random()*5;
-        y_ind=Math.random()*5;
+        x_ind=Math.floor(Math.random()*5);
+        y_ind=Math.floor(Math.random()*5);
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
-    letters_tried.append(put_l);
-    document.getElementById(x_ind+'_'+y_ind).textContent=put_l'/o';
-    document.getElementById(x_ind+'_'+y_ind).style.background="repeating-linear-gradient(45deg,#c9b458,#c9b458 10px, #787c7e 10px);";
-    //set whatever letter to whatever
+    letters_tried.push(put_l);
+    setTimeout(function(){ 
+
+         
+
+    document.getElementById(x_ind+'_'+y_ind).textContent=put_l.toUpperCase()+'/o';
+    document.getElementById(x_ind+'_'+y_ind).style.backgroundImage="linear-gradient(45deg, #c9b458 25%, #787c7e 25%, #787c7e 50%, #c9b458 50%, #c9b458 75%, #787c7e 75%, #787c7e 100%)";
+    }, 500); 
+    console.log("set whatever letter to whatever");
 }
+document.getElementById(x_ind+'_'+y_ind).disabled = true;
 x=isWin();
-if (x)
+if (x == 'o')
 {
     console.log('You lost, try again');
+    //you lost, try again
+}
+if (x == 'x')
+{
+    console.log('You won xo, guess a wordle now');
     //you lost, try again
 }
 }
@@ -183,15 +220,8 @@ if (x)
               [i,j]= _id.split('_');
               
               field[i][j]=1;
-              document.getElementById(i+'_'+j).textContent=letters_field[i][j]+'/x';
-              console.log(field);
-              x=isWin();
-              if (x === null) {cpuStep(_id);}
-              else
-              {
-                console.log('you won, now guess a wordle');
-                //you won now guess
-              }
+
+              
             }
 
 

@@ -38,7 +38,7 @@ button[disabled] {
         position: relative;
         width: 20px;
         height: 20px;
-        top:0;
+        top:40;
         left:0;
         z-index:50;
         font-size:20px;
@@ -71,10 +71,10 @@ button[disabled] {
     <script>
             let letters_alphabet='abcdefghijklmnopqrstuvwxyz'.split('');
             let init_wordlist=['abash','tithe','epoxy','ounce','vegan','budge','lanky','peril','swift','block'];
-            let field = Array(5).fill().map(() => Array(5).fill(0));
+            let field = Array(6).fill().map(() => Array(5).fill(0));
             let word='';
             let letters_tried = [];
-            let letters_field = Array(5).fill().map(() => Array(5).fill(null));
+            let letters_field = Array(6).fill().map(() => Array(5).fill(null));
 
                 function disableField()
                 {
@@ -92,13 +92,13 @@ button[disabled] {
                     x='';
                     for (var i = 0; i < 5; i++) {
                          for (var j = 0; j < 5; j++) {
-                            if (field[i][j] ==0) x+=' ';
-                            if (field[i][j] ==1) x+='x';
-                            if (field[i][j] ==1) x+='0';
+                            if (field[i][j] ==0) {x+=' ';}
+                            else if (field[i][j] ==1) {x+='x';}
+                            else if (field[i][j] ==-1) {x+='0';}
                     }
                     x+='\n';
                     }
-                    x+='res';
+                    x+=res;
                     var tn = document.createTextNode('Your results to copy are:\n'+x);
                     p.appendChild(tn);
 
@@ -110,11 +110,11 @@ button[disabled] {
                 {
                     for (var j = 0; j < 5; j++) {
                            var d= document.createElement("div");
-                           d.id='cnt'+i+'_'+j;
+                           d.id='cnt'+5+'_'+j;
                            var btn = document.createElement("button");
                            //btn.setAttribute("value",i+'_'+j);
                            btn.className = btn.className + "button built";
-                           btn.id=i+'_'+j;
+                           btn.id=5+'_'+j;
                            
                            d.className = d.className + "cellcnt";
                            d.style.left=btn.style.left=100+j*100;
@@ -126,45 +126,7 @@ button[disabled] {
                         }
                 }
 
-                function checkWordle()
-                {
-                    res='';
-                    for (var j = 0; j < 5; j++) {
-                        if (!letters_field[5][j]) return;
-                    }
-                    check_word='';
-                    for (var j = 0; j < 5; j++) {
-                        check_letter=letters_field[5][j];
-                        check_word+=check_letter;
-                        if (check_letter == word[j])
-                        {
-                            document.getElementById(5+'_'+j).style.backgroundColor = "#6aaa64";
-                            res+='+';
-                        }
-                        else if (word.includes(check_letter))
-                        {
-                            document.getElementById(5+'_'+j).style.backgroundColor = "#c9b458";
-                            res+='0';
-                        }
-                        else
-                        {
-                            document.getElementById(5+'_'+j).style.backgroundColor = "#787c7e";
-                            res+='-';
-                        }
-
-
-                    }
-                    if (check_word == word)
-                    {
-                        alert('You won!');
-                    }
-                    else
-                    {
-                        alert('Oops, word was '+word);
-                    }
-                    getEmojis(res);
-
-                }
+                
 
                 function putLetter(letter, sign, _id)
                 {
@@ -242,14 +204,17 @@ button[disabled] {
        let l=input.value[0];
     letters_tried.push(l);
     [i,j]= _id.split('_');
+    console.log('validator: ', i, j, l, letters_field);
 
-    letters_field[i,j]=l;
+
+    letters_field[i][j]=l;
     document.getElementById('inp'+i+'_'+j).type="hidden";
     if (i>4)
     {
+        console.log('indices and letter: ', i, j, l, letters_field[i][j]);
         _lett=document.createElement("p");
                     _lett.className = _lett.className + "guesser";
-                    var tn = document.createTextNode(letter);
+                    var tn = document.createTextNode(l.toUpperCase());
                     _lett.appendChild(tn);
                     document.getElementById('cnt'+_id).appendChild(_lett);
                     checkWordle();
@@ -277,7 +242,7 @@ function getLetter(not_in_word)
 
 function cpuStep(_id){
 [i,j]= _id.split('_');
-l=letters_field[i,j];
+l=letters_field[i][j];
 ind=word.indexOf(l);
 let x_ind=-1;
 let y_ind=-1;
@@ -390,7 +355,48 @@ if (x == 'x')
               
             }
 
+function checkWordle()
+                {
+                    res='';
+                    for (var j = 0; j < 5; j++) {
+                        console.log(letters_field);
+                        if (letters_field[5][j] === null) 
+                            {console.log('Word is not ready'); return;}
+                    }
+                    console.log('Word is ready');
+                    check_word='';
+                    for (var j = 0; j < 5; j++) {
+                        check_letter=letters_field[5][j];
+                        check_word+=check_letter;
+                        if (check_letter == word[j])
+                        {
+                            document.getElementById(5+'_'+j).style.backgroundColor = "#6aaa64";
+                            res+='+';
+                        }
+                        else if (word.includes(check_letter))
+                        {
+                            document.getElementById(5+'_'+j).style.backgroundColor = "#c9b458";
+                            res+='0';
+                        }
+                        else
+                        {
+                            document.getElementById(5+'_'+j).style.backgroundColor = "#787c7e";
+                            res+='-';
+                        }
 
+
+                    }
+                    if (check_word == word)
+                    {
+                        alert('You won!');
+                    }
+                    else
+                    {
+                        alert('Oops, word was '+word);
+                    }
+                    getEmojis(res);
+
+                }
               
            
     </script>

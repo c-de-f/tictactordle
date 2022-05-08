@@ -1,6 +1,7 @@
 <!DOCTYPE>
 <html>
     <head>
+        <meta charset="UTF-16">
         <style>
     .button.built {
         top: 0%; 
@@ -48,13 +49,29 @@ button[disabled] {
     .xo
     {
         position: relative;
-        width: 20px;
-        height: 20px;
-        bottom:0;
-        left:80;
+        width: 50px;
+        height: 50px;
+        bottom:30;
+        left:50;
         z-index:50;
-        font-size:20px;
+        font-size:40px;
         text-align: center;
+        color: #2a48c9;
+        font-family: sans-serif;
+    }
+
+    .result
+    {
+        z-index:100;
+        width:500px;
+        height:500px;
+        background-color: #ffffff;
+        margin:auto;
+        position:relative;
+        border: 1px solid;
+        border-radius: 5px;
+        white-space:pre-wrap;
+        padding:10px;
     }
 
     input[type="text"]
@@ -75,6 +92,9 @@ button[disabled] {
             let word='';
             let letters_tried = [];
             let letters_field = Array(6).fill().map(() => Array(5).fill(null));
+            var curdate = new Date();
+            var refdate = new Date(2022, 5, 7);
+            let diff = (new Date(curdate.getTime() - refdate.getTime())).getUTCDate() - 1;
 
                 function disableField()
                 {
@@ -88,21 +108,30 @@ button[disabled] {
                 function getEmojis(res)
                 {
                     var d= document.createElement("div");
-                    var p= document.createElement("p");
+                    d.className=d.className+'result';
+                    //var p= document.createElement("p");
                     x='';
                     for (var i = 0; i < 5; i++) {
                          for (var j = 0; j < 5; j++) {
-                            if (field[i][j] ==0) {x+=' ';}
-                            else if (field[i][j] ==1) {x+='x';}
-                            else if (field[i][j] ==-1) {x+='0';}
+                            if (field[i][j] ==0) {x+=String.fromCodePoint(9898);}
+                            else if (field[i][j] ==1) {x+=String.fromCodePoint(10060);}
+                            else if (field[i][j] ==-1) {x+=String.fromCodePoint(11093);}
                     }
-                    x+='\n';
+                    x+='\ \n';
                     }
                     x+=res;
-                    var tn = document.createTextNode('Your results to copy are:\n'+x);
-                    p.appendChild(tn);
+                    str='I tried #tictactordle No.'+diff+' and see how it turned up:\n'+x;
+                    var tn = document.createTextNode('Here are your results:\n\n'+str);
+                    //p.appendChild(tn);
 
-                    d.appendChild(p);
+                    var btn = document.createElement("button");
+                           //btn.setAttribute("value",i+'_'+j);
+                           btn.className = btn.className + "button";
+                           btn.textContent='Copy to clipboard';
+                           btn.onclick = function() {navigator.clipboard.writeText(str);};
+                           d.appendChild(btn);
+
+                    d.appendChild(tn);
                     document.body.appendChild(d);
                 }
 
@@ -158,17 +187,14 @@ button[disabled] {
                     for (var i = 0; i < lines.length; i++) {console.log(lines[i])}
                     if (lines.indexOf('11111') != -1) {return 'x'};
                     if (lines.indexOf('-1-1-1-1-1') != -1) {return 'o'};
-                    const sort = str => str.split('').sort((a, b) => a.localeCompare(b)).join('');
-                    for (var i = 0; i < lines.length; i++) {if (sort(lines[i]) == '01111') return 'i';}
+                    //const sort = str => str.split('').sort((a, b) => a.localeCompare(b)).join('');
+                    //for (var i = 0; i < lines.length; i++) {if (sort(lines[i]) == '01111') return 'i';}
                     return null;
                 }
 
                 function setWord()
                 {
-                    var curdate = new Date();
-                    var refdate = new Date(2022, 5, 7);
-                    diff = (new Date(curdate.getTime() - refdate.getTime())).getUTCDate() - 1;
-                    console.log ('Word number is: '+diff);
+                     console.log ('Word number is: '+diff);
                     word=init_wordlist[diff];
                     console.log ('Word is: '+word);
                 }
@@ -205,6 +231,7 @@ button[disabled] {
     letters_tried.push(l);
     [i,j]= _id.split('_');
     console.log('validator: ', i, j, l, letters_field);
+    field[i][j]=1;
 
 
     letters_field[i][j]=l;
@@ -241,6 +268,27 @@ function getLetter(not_in_word)
 
 
 function cpuStep(_id){
+isFull=1;
+for (var i=0; i<5; i++)
+{
+    a=field[i].indexOf(0);
+    if (a != -1)
+    {
+        isFull=0;
+    }
+}
+console.log('Am I full? '+isFull);
+if (isFull==1)
+{
+    x=isWin();
+    disableField();
+
+    
+    if (x == 'x')
+    {console.log('You won xo, guess a wordle now');putGuesser();}
+    else {console.log('We have a tie, try guessing a word');putGuesser();}
+    return;
+    }
 [i,j]= _id.split('_');
 l=letters_field[i][j];
 ind=word.indexOf(l);
@@ -254,10 +302,19 @@ if ((ind == j) || (word[j] == l))
     put_l=getLetter(1);
     x_ind=(i+1)%5;
     y_ind=j;
-    while (field[x_ind][y_ind] !=0)
+    x_ind=0;
+    while ((field[x_ind][y_ind] !=0) && (x_ind <5))
     {
-        x_ind=Math.floor(Math.random()*5);
-        y_ind=Math.floor(Math.random()*5);
+        x_ind+=1;
+    }
+    if (x_ind >4)
+    {
+        x_ind=0;
+        while (field[x_ind][y_ind] !=0)
+        {
+          x_ind=Math.floor(Math.random()*5);
+          y_ind=Math.floor(Math.random()*5);  
+        }
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
@@ -278,10 +335,19 @@ else if (ind != -1)
     put_l=getLetter(0);
     x_ind=(i+1)%5;
     y_ind=j;
-    while (field[x_ind][y_ind] !=0)
+    x_ind=0;
+    while ((field[x_ind][y_ind] !=0) && (x_ind <5))
     {
-        x_ind=Math.floor(Math.random()*5);
-        y_ind=Math.floor(Math.random()*5);
+        x_ind+=1;
+    }
+    if (x_ind == 5)
+    {
+        x_ind=0;
+        while (field[x_ind][y_ind] !=0)
+        {
+          x_ind=Math.floor(Math.random()*5);
+          y_ind=Math.floor(Math.random()*5);  
+        }
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
@@ -332,8 +398,10 @@ if (x == 'o')
 if (x == 'x')
 {
     disableField();
+    setTimeout(function(){ 
     alert('You won xo, guess a wordle now');
     putGuesser();
+    }, 500);  
     console.log('You won xo, guess a wordle now');
     //you lost, try again
 }
@@ -350,7 +418,7 @@ if (x == 'x')
                 document.getElementById('cnt'+_id).appendChild(_in);
               [i,j]= _id.split('_');
               
-              field[i][j]=1;
+              
 
               
             }
@@ -371,22 +439,26 @@ function checkWordle()
                         if (check_letter == word[j])
                         {
                             document.getElementById(5+'_'+j).style.backgroundColor = "#6aaa64";
-                            res+='+';
+                            res+=String.fromCodePoint(129001);
                         }
                         else if (word.includes(check_letter))
                         {
                             document.getElementById(5+'_'+j).style.backgroundColor = "#c9b458";
-                            res+='0';
+                            res+=String.fromCodePoint(129000);
                         }
                         else
                         {
                             document.getElementById(5+'_'+j).style.backgroundColor = "#787c7e";
-                            res+='-';
+                            res+=String.fromCodePoint(11036);
                         }
 
 
                     }
-                    if (check_word == word)
+
+                    setTimeout(function(){ 
+
+
+          if (check_word == word)
                     {
                         alert('You won!');
                     }
@@ -395,6 +467,9 @@ function checkWordle()
                         alert('Oops, word was '+word);
                     }
                     getEmojis(res);
+
+                     }, 500);  
+             
 
                 }
               

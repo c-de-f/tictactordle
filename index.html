@@ -2,6 +2,11 @@
 <html>
     <head>
         <meta charset="UTF-16">
+        <meta name="google-site-verification" content="cx9brnmHb_HogGNHcEo4BrjY0Am7NkN3zKtyq0QaQdE"/>
+        <meta name="Description" CONTENT="Tictactordle - Wordle/Tic-tac-toe crossover we all deserved">
+        <meta name="viewport" content="width=500, height=600, initial-scale=1, maximum-scale=1">
+    <title>Tictactordle - Wordle/Tic-tac-toe crossover we all deserved</title>
+    
         <style>
     .button.built {
         top: 0%; 
@@ -211,7 +216,8 @@ var d= document.createElement("div");
                            btn.id=5+'_'+j;
                            
                            d.className = d.className + "cellcnt";
-                           d.style.left=btn.style.left=135+j*100;
+                           offset=(window.screen.width>650)? 135 :0;
+                           d.style.left=btn.style.left=offset+j*100;
                            d.style.top=btn.style.top=10+500;
                            //btn.textContent=btn.id;
                            btn.onclick = function() {setState(this.id);};
@@ -332,7 +338,8 @@ var d= document.createElement("div");
                            btn.id=i+'_'+j;
                            
                            d.className = d.className + "cellcnt";
-                           d.style.left=btn.style.left=135+j*100;
+                           offset=(window.screen.width>650)? 135 :0;
+                           d.style.left=btn.style.left=offset+j*100;
                            d.style.top=btn.style.top=10+i*100;
                            //btn.textContent=btn.id;
                            btn.onclick = function() {setState(this.id);};

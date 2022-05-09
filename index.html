@@ -167,14 +167,15 @@ var d= document.createElement("div");
                     x+='\ \n';
                     }
                     x+=res;
+                    hard_str=(level=='hard')?' in HARD mode':null;
                     if (mode == 'daily')
                     {
                     no=parseInt(diff)+parseInt(1);
-                    str='I tried #tictactordle No.'+no+' and see how it turned up:\n'+x;
+                    str='I tried #tictactordle No.'+no+hard_str+' and see how it turned up:\n'+x;
                     }
                     else
                     {
-                    str='I tried #tictactordle and see how it turned up:\n'+x;
+                    str='I tried #tictactordle'+hard_str+' and see how it turned up:\n'+x;
                     }
                     var tn = document.createTextNode('Here are your results to share:\n\n'+str+'\n\n');
                     //p.appendChild(tn);
@@ -283,15 +284,17 @@ var d= document.createElement("div");
                            //btn.setAttribute("value",i+'_'+j);
                            btn.className = btn.className + "button";
                            btn.textContent='daily';
-                           btn.onclick = function() {mode='daily'; };
+                           btn.id='daily_butt';
+                           btn.onclick = function() {mode='daily'; btn.style.border="2px solid black";document.getElementById('daily_butt').disabled="true";document.getElementById('trainy_butt').disabled="true";};
                            
                     var btn2 = document.createElement("button");
                            //btn.setAttribute("value",i+'_'+j);
                            btn2.className = btn.className + "button";
                            btn2.textContent='training';
-                           btn2.onclick = function() {mode='training'; };
+                           btn2.id='trainy_butt';
+                           btn2.onclick = function() {mode='training'; btn2.style.border="2px solid black";document.getElementById('daily_butt').disabled="true";document.getElementById('trainy_butt').disabled="true";};
 
-                    var tn2 = document.createTextNode('\nSelect difficulty:\n\n');
+                    var tn2 = document.createTextNode('\n\nSelect difficulty:\n\n');
                     //p.appendChild(tn);
 
                     var btn3 = document.createElement("button");

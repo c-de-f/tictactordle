@@ -6,6 +6,32 @@
         <meta name="Description" CONTENT="Tictactordle - Wordle/Tic-tac-toe crossover we all deserved">
         <meta name="viewport" content="width=500, height=600, initial-scale=1, maximum-scale=1">
     <title>Tictactordle - Wordle/Tic-tac-toe crossover we all deserved</title>
+
+    
+
+    <!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(88741010, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/88741010" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7V0QBRZZ6N"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7V0QBRZZ6N');
+</script>
     
         <style>
     .button.built {
@@ -107,7 +133,8 @@ button[disabled] {
     <script>
             let letters_alphabet='abcdefghijklmnopqrstuvwxyz'.split('');
             
-            field = Array(6).fill().map(() => Array(5).fill(0));
+            var field = Array(6).fill().map(() => Array(5).fill(0));
+            for (var i=0;i<6;i++){for (var j=0;j<5;j++) {field[i][j]=0;}}
             let word='';
             letters_tried = [];
             letters_field = Array(6).fill().map(() => Array(5).fill(null));
@@ -117,8 +144,10 @@ button[disabled] {
             level='easy';
             let diff = (new Date(curdate.getTime() - refdate.getTime())).getUTCDate() - 1;
             wordable_count = Array(5).fill().map(() => Array(5).fill(0));
-            hard_letter='';
-            x_ind=y_ind=0;
+            //hard_letter='';
+            var x_ind=0;
+            var y_ind=0;
+            isHardSituation=0;
 
             function putAlert(_text)
 {
@@ -356,7 +385,7 @@ var d= document.createElement("div");
                 function wordable(i,j,l)
                 {
                     if ((i>4) || (j>4)) return 0;
-                    console.log(i,j,l);
+                    //console.log(i,j,l);
                     wordable_count[parseInt(""+i)][parseInt(""+j)]+=1;
                     //console.log(letters_field);
                     frag_word= (letters_field[i][0]??'.')+(letters_field[i][1]??'.')+(letters_field[i][2]??'.')+(letters_field[i][3]??'.')+(letters_field[i][4]??'.');
@@ -370,14 +399,8 @@ var d= document.createElement("div");
         {
             isWordable=1;
             console.log (all_words[w]+' for '+'^'+frag_word+'$');
-            if (wordable_count[i][j]>30) {console.log('Growing wordable count');}
-             if (wordable_count[i][j]>100)
-            
-    {
-        hard_letter=all_words[w].split('')[j];
-        console.log('setting hard letter to '+hard_letter);
-        return hard_letter;
-    }
+            if (wordable_count[i][j]>30) {console.log('Alarming count rate');isHardSituation=1;}
+       
             break;
         }
     }
@@ -441,21 +464,93 @@ function getLetter(not_in_word)
     return untried[Math.floor(Math.random()*untried.length)];
 }
 
+function stepHardSituation()
+{
+    console.log('Danger of hangup, heuristics go!');
+    free_i=free_j=-1;
+    for (var i=0;i<5; i++)
+    {
+        for (var j=0;j<5; j++)
+        {
+            if (field[i][j] == 0)
+            {
+                free_i=i;
+                free_j=j;
+                break;
+            }
+        }
+    }
+    console.log('free field: ',free_i, free_j);
+    mask=(letters_field[free_i][0]??'.')+(letters_field[free_i][1]??'.')+(letters_field[free_i][2]??'.')+(letters_field[free_i][3]??'.')+(letters_field[free_i][4]??'.');
+    console.log('free mask: ',mask);
+    lett='';
+    for (var w=0; w<all_words.length;w++)
+    {
+        if (all_words[w].match(new RegExp('^'+mask+'$')))
+        {
+            console.log('word found: ',all_words[w]);
+            lett=all_words[w].charAt(free_j);
+            break;
+        }
+    }
+    field[free_i][free_j]=-1;
+    letters_field[free_i][free_j]=lett;
+    letters_tried.push(lett);
+    setTimeout(function(){ 
+
+       
+
+putLetter(lett.toUpperCase(), 'o', free_i+'_'+free_j);
+    document.getElementById(free_i+'_'+free_j).style.backgroundImage="linear-gradient(45deg, #c9b458 25%, #787c7e 25%, #787c7e 50%, #c9b458 50%, #c9b458 75%, #787c7e 75%, #787c7e 100%)"; 
+    }, 500);  
+
+    document.getElementById(free_i+'_'+free_j).disabled = true;
+x=isWin();
+if (x == 'o')
+{
+    disableField();
+    putAlert('You lost, refresh page to play again');
+   
+}
+if (x == 'x')
+{
+    disableField();
+    setTimeout(function(){ 
+    putAlert('You won the Tic-tac-toe part, guess the word now');
+    putGuesser();
+    }, 500);  
+    
+}
+    return;
+}
+
 
 function cpuStep(_id){
+    //console.log(field);
 isFull=1;
 //console.log('I am computer, my level is '+level);
-for (var i=0; i<5; i++)
+for (var _i=0; _i<5; _i++)
 {
-    a=field[i].indexOf(0);
-    if (a != -1)
+    for (var _j=0; _j<5; _j++)
+{
+    //console.log(field, _i, _j);
+    a=field[parseInt(_i)][parseInt(_j)];
+    if (a == 0)
     {
         isFull=0;
     }
 }
+}
+
+[i,j]= _id.split('_');
+l=letters_field[i][j];
 
 if (isFull==1)
 {
+    if (word[j]==l) {clr="#6aaa64";}
+    else if (word.indexOf(l)!=-1) {clr="#c9b458";}
+    else {clr="#787c7e";}
+    document.getElementById(i+'_'+j).style.backgroundColor = clr;
     x=isWin();
     disableField();
 
@@ -465,8 +560,7 @@ if (isFull==1)
     else {putAlert('We have a tie, try guessing the word');putGuesser();}
     return;
     }
-[i,j]= _id.split('_');
-l=letters_field[i][j];
+
 ind=word.indexOf(l);
 let x_ind=-1;
 let y_ind=-1;
@@ -475,21 +569,18 @@ x=isWin();
 if ((ind == j) || (word[j] == l))
 {
     document.getElementById(i+'_'+j).style.backgroundColor = "#6aaa64";
+    
     put_l=getLetter(1);
     y_ind=parseInt(j);
     x_ind=0;
     w=wordable(x_ind,y_ind,put_l);
     while (((field[x_ind][y_ind] !=0) && (x_ind <4)) || ((level=='hard') && (w==0) ) )
     {
+        if (isHardSituation ==1) {stepHardSituation(); return;}
         x_ind+=1;
-        if (hard_letter) {put_l=hard_letter; hard_letter='';}
-        else if (level=='hard') {put_l=getLetter(1);}
+        if (level=='hard') {put_l=getLetter(1);}
         w=wordable(x_ind,y_ind,put_l);
-        if ((letters_alphabet.indexOf(w) !=-1) && (field[x_ind][y_ind] ==0))
-          {
-            put_l=w;
-            break;
-          }
+       
 
     }
     if (x_ind >=4)
@@ -498,16 +589,12 @@ if ((ind == j) || (word[j] == l))
         w=wordable(x_ind,y_ind,put_l);
         while ((field[x_ind][y_ind] !=0) || ((level=='hard') && (w ==0) ))
         {
+          if (isHardSituation ==1) {stepHardSituation(); return;}
           x_ind=Math.floor(Math.random()*5);
           y_ind=Math.floor(Math.random()*5);
-          if (hard_letter) {put_l=hard_letter; hard_letter='';}
-        else if (level=='hard') {put_l=getLetter(1);}
+          if (level=='hard') {put_l=getLetter(1);}
           w=wordable(x_ind,y_ind,put_l);  
-          if ((letters_alphabet.indexOf(w) !=-1) && (field[x_ind][y_ind] ==0))
-          {
-            put_l=w;
-            break;
-          }
+          
         }
     }
     field[x_ind][y_ind]=-1;
@@ -526,23 +613,21 @@ else if (ind != -1)
 {
     document.getElementById(i+'_'+j).style.backgroundColor = "#c9b458";
     
+    
     put_l=getLetter(0);
-    x_ind=(i+1)%5;
-    y_ind=parseInt(j);
+    //x_ind=((i+1)%5)??0;
+    y_ind=(parseInt(j)%5)??0;
+    
     x_ind=0;
     w=wordable(x_ind,y_ind,put_l);
     //console.log(field);
     while (((field[x_ind][y_ind] !=0) && (x_ind <4)) || ((level=='hard') && (w ==0) ))
     {
-        x_ind+=1;
-        if (hard_letter) {put_l=hard_letter; hard_letter='';}
-        else if (level=='hard') {put_l=getLetter(1);}
+        if (isHardSituation ==1) {stepHardSituation(); return;}
+        x_ind=x_ind+1;
+        if (level=='hard') {put_l=getLetter(1);}
         w=wordable(x_ind,y_ind,put_l);
-        if ((letters_alphabet.indexOf(w) !=-1) && (field[x_ind][y_ind] ==0))
-          {
-            put_l=w;
-            break;
-          }
+        
     }
     if (x_ind >=4)
     {
@@ -550,16 +635,12 @@ else if (ind != -1)
         w=wordable(x_ind,y_ind,put_l);
         while ((field[x_ind][y_ind] !=0) || ((level=='hard') && (w ==0) ))
         {
+          if (isHardSituation ==1) {stepHardSituation(); return;}
           x_ind=Math.floor(Math.random()*5);
           y_ind=Math.floor(Math.random()*5);
-          if (hard_letter) {put_l=hard_letter; hard_letter='';}
-        else if (level=='hard') {put_l=getLetter(1);}
+          if (level=='hard') {put_l=getLetter(1);}
           w=wordable(x_ind,y_ind,put_l); 
-          if ((letters_alphabet.indexOf(w) !=-1) && (field[x_ind][y_ind] ==0))
-          {
-            put_l=w;
-            break;
-          } 
+          
         }
     }
     field[x_ind][y_ind]=-1;
@@ -578,6 +659,7 @@ else if (ind != -1)
 else
 {
     document.getElementById(i+'_'+j).style.backgroundColor = "#787c7e";
+    
     let put_l=getLetter(0);
     x_ind=Math.floor(Math.random()*5);
     y_ind=Math.floor(Math.random()*5);
@@ -586,16 +668,12 @@ else
     //console.log(w);
     while ((field[x_ind][y_ind] !=0) || ((level=='hard') && (w ==0) ))
     {
+        if (isHardSituation ==1) {stepHardSituation(); return;}
         x_ind=Math.floor(Math.random()*5);
         y_ind=Math.floor(Math.random()*5);
-        if (hard_letter) {put_l=hard_letter; hard_letter='';}
-        else if (level=='hard') {put_l=getLetter(1);}
+         if (level=='hard') {put_l=getLetter(1);}
         w=wordable(x_ind,y_ind,put_l);
-        if ((letters_alphabet.indexOf(w) !=-1) && (field[x_ind][y_ind] ==0))
-          {
-            put_l=w;
-            break;
-          }
+        
     }
     field[x_ind][y_ind]=-1;
     letters_field[x_ind][y_ind]=put_l;
@@ -627,6 +705,41 @@ if (x == 'x')
     }, 500);  
     
 }
+
+
+isFull=1;
+//console.log('I am computer, my level is '+level);
+for (var _i=0; _i<5; _i++)
+{
+    for (var _j=0; _j<5; _j++)
+{
+    //console.log(field, _i, _j);
+    a=field[parseInt(_i)][parseInt(_j)];
+    if (a == 0)
+    {
+        isFull=0;
+    }
+}
+}
+
+[i,j]= _id.split('_');
+l=letters_field[i][j];
+
+if (isFull==1)
+{
+    
+    x=isWin();
+    disableField();
+
+    
+    if (x == 'x')
+    {putAlert('You won the Tic-tac-toe part, guess the word now');putGuesser();}
+else if (x == 'o')
+    { disableField();putAlert('You lost, refresh page to play again');}
+    else {putAlert('We have a tie, try guessing the word');putGuesser();}
+    return;
+    }
+
 }
                 function setState(_id)
             {
@@ -715,4 +828,12 @@ function checkWordle()
               
            
     </script>
+    <script>
+         <!--
+            window.onerror = function (msg, url, line) {
+                console.log(i,j);
+               cpuStep(i+'_'+j);
+            }
+         //-->
+      </script>
 </html>

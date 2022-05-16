@@ -428,9 +428,16 @@ var d= document.createElement("div");
                 }
 
                 function validate(input, _id){
-
+                    v=input.value;
+                    if ((v === null) || (v === undefined) || (v.length==0) || (!v[0].match(/[a-z]/i)))
+                    {
+                        document.getElementById('inp'+i+'_'+j).value='';
+                        return;
+                    }
+                    
 
        let l=input.value[0].toLowerCase();
+       
       // console.log('level is '+level);
     
     [i,j]= _id.split('_');

@@ -115,6 +115,17 @@ button[disabled] {
         width: 100%;
     }
 
+    .righty
+    {
+        position:absolute;
+        float: right;
+        left: 700;
+        width: 200px;
+        text-align:left;
+        margin:auto;
+        width: 100%;
+    }
+
     input[type="text"]
     {
         top: 40px; 
@@ -126,8 +137,16 @@ button[disabled] {
     </style>
     </head>
     <body onload="printBtn();">
+        <div id="mentioned" style="display:none" class="righty">
+            <h3>Mentions</h3>
+            <ul style="list-style-position: inside; padding-left: 0;">
+                <li><a href="https://www.youtube.com/watch?v=3Q77fqAxhYI&ab_channel=OrrinCastillo"><b>TICTACTORDLE-MAY-16TH-22</b> by <i>Orrin Castillo</i></a></li>
+                <li><a href="https://www.youtube.com/watch?v=xwO_mYpunqA&ab_channel=OrrinCastillo"><b>TICTACTORDLE-MAY-15TH-22</b> by <i>Orrin Castillo</i></a></li>
+            <li><a href="https://www.youtube.com/watch?v=sATxCPqGPDM"><b>MY FIRST TRY AT TICTACTORDLE</b> by <i>Orrin Castillo</i></a></li>
+        </ul>
+        </div>
         
-        <a href="tg://resolve?domain=c_de_f" class="bottom">Send feedback</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSfW0S7_SZneDSU5Up_bqZV6rhhaUTVgZilzkam2-T-5xGx7Kg/viewform?usp=sf_link" class="bottom">Send feedback</a>
     </body>
     <script src="wordlists.js"></script>
     <script>
@@ -336,13 +355,13 @@ var d= document.createElement("div");
                            //btn.setAttribute("value",i+'_'+j);
                            btn3.className = btn3.className + "button";
                            btn3.textContent='easy';
-                           btn3.onclick = function() {level='easy'; document.getElementById('mode_div').style.display = "none";setWord();};
+                           btn3.onclick = function() {level='easy'; document.getElementById('mode_div').style.display = "none"; document.getElementById('mentioned').style.display = "block"; setWord();};
                            
                     var btn4 = document.createElement("button");
                            //btn.setAttribute("value",i+'_'+j);
                            btn4.className = btn4.className + "button";
                            btn4.textContent='hard';
-                           btn4.onclick = function() {level='hard'; document.getElementById('mode_div').style.display = "none";setWord();};
+                           btn4.onclick = function() {level='hard'; document.getElementById('mode_div').style.display = "none"; document.getElementById('mentioned').style.display = "block"; setWord();};
                     
                     d.appendChild(tn);
                     d.appendChild(btn);
@@ -743,14 +762,19 @@ else if (x == 'o')
 }
                 function setState(_id)
             {
+                if (document.contains(document.getElementById('inp'+_id))) {
+            document.getElementById('inp'+_id).remove();
+        }
                 var _in = document.createElement('input');
                 _in.id='inp'+_id;
                 _in.type="text";
                 _in.maxLength="1";
+                _in.focus();
                 _in.onkeyup = function() {validate(this, _id);};
                 _in.size="1";
 
                 document.getElementById('cnt'+_id).appendChild(_in);
+                document.getElementById('inp'+_id).focus();
               [i,j]= _id.split('_');
               
               

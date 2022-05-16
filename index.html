@@ -278,6 +278,9 @@ var d= document.createElement("div");
 
                 function putLetter(letter, sign, _id)
                 {
+                        if (document.contains(document.getElementById('inp'+_id))) {
+                            document.getElementById('inp'+_id).remove();
+                        }
                     _lett=document.createElement("p");
                     _lett.className = _lett.className + "letter";
                     var tn = document.createTextNode(letter);
@@ -428,6 +431,8 @@ var d= document.createElement("div");
                 }
 
                 function validate(input, _id){
+                    [i,j]= _id.split('_');
+                    
                     v=input.value;
                     if ((v === null) || (v === undefined) || (v.length==0) || (!v[0].match(/[a-z]/i)))
                     {
@@ -436,11 +441,11 @@ var d= document.createElement("div");
                     }
                     
 
-       let l=input.value[0].toLowerCase();
+       let l=v[0].toLowerCase();
        
       // console.log('level is '+level);
     
-    [i,j]= _id.split('_');
+    
     if ((level=='hard')  && (i<5))
     {
        // console.log('Input on hard');
@@ -769,7 +774,9 @@ else if (x == 'o')
 }
                 function setState(_id)
             {
-                if (document.contains(document.getElementById('inp'+_id))) {
+                [i,j]= _id.split('_');
+            
+                if ((document.contains(document.getElementById('inp'+_id))) && (i<5)) {
             document.getElementById('inp'+_id).remove();
         }
                 var _in = document.createElement('input');
@@ -782,7 +789,7 @@ else if (x == 'o')
 
                 document.getElementById('cnt'+_id).appendChild(_in);
                 document.getElementById('inp'+_id).focus();
-              [i,j]= _id.split('_');
+              
               
               
 
